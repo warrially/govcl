@@ -1,3 +1,11 @@
+//----------------------------------------
+//
+// Copyright © ying32. All Rights Reserved.
+//
+// Licensed under Apache License 2.0
+//
+//----------------------------------------
+
 // +build windows
 
 package win
@@ -7,6 +15,8 @@ import (
 
 	"fmt"
 	"syscall"
+
+	. "github.com/ying32/govcl/vcl/types"
 )
 
 const MAX_VERS = 20
@@ -92,7 +102,21 @@ func IsAdministrator() bool {
 	return true
 }
 
-// OpenInExplorer
+// 以管理员权限运行一个程序
+func RunAsAdministrator(file, params, dir string) bool {
+	var sei TShellExecuteInfo
+	sei.CbSize = uint32(unsafe.Sizeof(sei))
+	sei.Wnd = 0
+	sei.FMask = SEE_MASK_FLAG_DDEWAIT | SEE_MASK_FLAG_NO_UI
+	sei.LpVerb = CStr("runas")
+	sei.LpFile = CStr(file)
+	sei.LpParameters = CStr(params)
+	sei.LpDirectory = CStr(dir)
+	sei.NShow = SW_SHOWNORMAL
+	return ShellExecuteEx(&sei)
+}
+
+// OpenInExplorer 在资源管理器中定位文件
 func OpenInExplorer(aFileName string) {
 	ShellExecute(0, "OPEN", "Explorer.exe",
 		fmt.Sprintf("/e, /select, \"%s\"", aFileName), "", SW_SHOW)
@@ -107,6 +131,17 @@ func CStr(str string) uintptr {
 // CStrToGoStr
 func GoStr(str []uint16) string {
 	return syscall.UTF16ToString(str)
+}
+
+// CStrToGoStr
+func GoPtrStr(str uintptr) string {
+	l := LstrlenW(str)
+	if l == 0 {
+		return ""
+	}
+	buff := make([]uint16, l)
+	Memcpy(uintptr(unsafe.Pointer(&buff[0])), str, uintptr(l*2))
+	return GoStr(buff)
 }
 
 // GoBoolToCBool
@@ -125,7 +160,7 @@ func GoBool(b uintptr) bool {
 	return false
 }
 
-// UTF8ToANSI
+// UTF8ToANSI 将UTF-8字符转为ANSI格式
 func UTF8ToANSI(str string) []uint8 {
 	if str == "" {
 		return nil
@@ -142,4 +177,32 @@ func UTF8ToANSI(str string) []uint8 {
 	WideCharToMultiByte(CP_ACP, 0, wCharBufferPtr, -1, aCharBufferPtr, nLen, 0, nil)
 
 	return aCharBuffer
+}
+
+// GetDesktopPath 获取桌面路径
+func GetDesktopPath() string {
+	var lpPath string
+	if SHGetSpecialFolderPath(0, &lpPath, CSIDL_DESKTOP, false) {
+		return lpPath
+	}
+	return ""
+}
+
+// ResourceToBytes 查找指定实例中 指定名称、指定类型 资源，并返回资源字节
+func ResourceToBytes(instance uintptr, resName string, resType uintptr) ([]byte, bool) {
+	resInfo := FindResource(HMODULE(instance), resName, resType)
+	if resInfo == 0 {
+		return nil, false
+	}
+	hGlobal := LoadResource(instance, resInfo)
+	if hGlobal == 0 {
+		return nil, false
+	}
+	ptr := LockResource(hGlobal)
+	size := SizeofResource(instance, resInfo)
+	bytes := make([]byte, size)
+	Memcpy(uintptr(unsafe.Pointer(&bytes[0])), ptr, uintptr(size))
+	//UnlockResource(hGlobal);
+	FreeResource(hGlobal)
+	return bytes, true
 }

@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"time"
 
+	_ "github.com/ying32/govcl/pkgs/winappres"
 	"github.com/ying32/govcl/vcl"
-
 	"github.com/ying32/govcl/vcl/types"
 )
 
 func main() {
-	vcl.Application.SetIconResId(3)
+
 	vcl.Application.Initialize()
 	vcl.Application.SetMainFormOnTaskBar(true)
 
@@ -79,7 +79,9 @@ func main() {
 	// TStatusBar
 	stat := vcl.NewStatusBar(mainForm)
 	stat.SetParent(mainForm)
-	//stat.SetSizeGrip(false) // 右解是否有可调的
+	// 不知道从哪个版开始，默认变成了true了
+	stat.SetSimplePanel(false)
+	//stat.SetSizeGrip(true) // 右下角是否有可调的
 	spnl := stat.Panels().Add()
 	spnl.SetText("第一个")
 	spnl.SetWidth(80)
@@ -252,7 +254,7 @@ func main() {
 	dtp := vcl.NewDateTimePicker(mainForm)
 	dtp.SetParent(mainForm)
 	dtp.SetBounds(left, top, 167, 25)
-	dtp.SetFormat("yyyy-MM-dd HH:mm:ss")
+	//dtp.SetFormat("yyyy-MM-dd HH:mm:ss")
 
 	top += dtp.Height() + 10
 
@@ -266,7 +268,8 @@ func main() {
 	top += mdtp.Height() + 10
 	dtp.SetDateTime(time.Now().Add(time.Hour * 48))
 	dtp.SetDate(time.Now().AddDate(1, 0, 0))
-	fmt.Println("time: ", mdtp.Date())
+
+	fmt.Println("time: ", mdtp.Date(), dtp.DateTime())
 
 	btn = vcl.NewButton(mainForm)
 	btn.SetParent(mainForm)
@@ -275,6 +278,19 @@ func main() {
 	btn.SetCaption("改变日期")
 	btn.SetOnClick(func(vcl.IObject) {
 		mdtp.SetDate(time.Now().AddDate(-20, 0, 0))
+	})
+
+	top += btn.Height() + 10
+	spinedit := vcl.NewSpinEdit(mainForm)
+	spinedit.SetParent(mainForm)
+	spinedit.SetLeft(left)
+	spinedit.SetTop(top)
+	spinedit.SetWidth(100)
+	spinedit.SetMaxValue(10000)
+	spinedit.SetMinValue(50)
+	spinedit.SetValue(100)
+	spinedit.SetOnChange(func(sender vcl.IObject) {
+		fmt.Println(spinedit.Value())
 	})
 
 	// run

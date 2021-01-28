@@ -1,73 +1,99 @@
+//----------------------------------------
+//
+// Copyright © ying32. All Rights Reserved.
+//
+// Licensed under Apache License 2.0
+//
+//----------------------------------------
+
 package vcl
 
 import (
-	"fmt"
-
 	. "github.com/ying32/govcl/vcl/api"
 )
 
-var globalFormScaled bool = false
-
 /*
- CreateForm 一般不建议使用 NewForm，而优先使用CreateForm
- 这里要做兼容
- len(fields) = 1
-   这时，可不加载窗口的资源文件，自己构造一种，如下：
+ TApplication.CreateForm 一般不建议使用NewForm，而优先使用CreateForm
 
-   type TForm1 struct {
-      *vcl.TForm // 必须首个，无需命名，否则失败。
-      Button1 *vcl.TButton
-   }
+  -------------------- 用法一--------------------------------------
+  1、mainForm := vcl.Application.CreateForm()    // 直接返回，不推荐使用
+  例:
+    mainForm := vcl.Application.CreateForm()
+    mainForm.SetOnClick(func(sender vcl.IObject) {
+        vcl.ShowMessage("msg")
+    })
 
-   var form1 *vcl.TForm1
 
-   vcl.Application.Create(&form1)
+  -------------------- 用法二--------------------------------------
+  2、vcl.Application.CreateForm(&mainForm)       // 无资源或者自动加载对应类名的资源，当无资源时只会绑定窗口的事件，不会绑定子组件事件，有资源则自动绑定所有事件
+  例：
+    type TMainForm struct {
+        *vcl.TForm
+    }
 
- len(fields) = 2, 首个参数为：文件名或者字节， 第二个参数为输出的目标
-   目前只支持libvcl的，主要是解决dpi问题。
+    var mainForm *TMainForm
+    vcl.Application.CreateForm(&mainForm)
 
+    func (f *TMainForm)OnFormCreate(sender vcl.IObject) {
+        fmt.Println("FormCreate")
+    }
+
+    func (f *TMainForm)OnFormClick(sender vcl.IObject) {
+        vcl.ShowMessage("click")
+    }
+
+
+  -------------------- 用法三--------------------------------------
+  3、vcl.Application.CreateForm(&mainForm, true) // 无资源或者自动加载对应类名的资源，当第二个参数为true时在OnFormCreate调用完后会绑定子组件事件(当查找到对应的资源则第二个参数无效)
+  例：
+    type TMainForm struct {
+        *vcl.TForm
+        Btn1 *vcl.TButton
+    }
+
+    var mainForm *TMainForm
+    vcl.Application.CreateForm(&mainForm, true)
+
+    func (f *TMainForm)OnFormCreate(sender vcl.IObject) {
+        fmt.Println("FormCreate")
+        f.Btn1 = vcl.NewButton(f)
+        f.Btn1.SetParent(f)
+    }
+
+    func (f *TMainForm)OnFormClick(sender vcl.IObject) {
+        vcl.ShowMessage("click")
+    }
+
+    func (f *TMainForm)OnBtn1Click(Sender vcl.IObject) {
+        vcl.ShowMessage("Btn1 Click")
+    }
+
+
+  -------------------- 用法四--------------------------------------
+  // 将来准备废弃
+  4、vcl.Application.CreateForm("form1.gfm", &mainForm)  // 从资源文件中填充子组件，并绑定所有事件
+  -------------------- 用法五--------------------------------------
+  // 将来准备废弃
+  5、vcl.Application.CreateForm(form1Bytes, &mainForm)   // 从字节中填充子组件，并绑定所有事件
 */
-func (a *TApplication) CreateForm(fields ...interface{}) *TForm {
-	defer func() {
-		if err := recover(); err != nil {
-			fmt.Println(err)
-		}
-	}()
-	// 参数的个数决定，创建窗口时是否使用缩放，此值需要 vcl.Application.SetFormScaled(true) 后才能生效。
-	form := FormFromInst(Application_CreateForm(a.instance, len(fields) != 2))
 
-	// 当等于1时使用手动构造的一种
-	if len(fields) == 1 {
-		a.fullFiledVal(form, fields[0])
-	} else if len(fields) == 2 { // 等于2时，使用资源中的
-		switch fields[0].(type) {
-		case string:
-			ResFormLoadFromFile(fields[0].(string), CheckPtr(form))
-		case []byte:
-			mem := NewMemoryStreamFromBytes(fields[0].([]byte))
-			defer mem.Free()
-			ResFormLoadFromStream(CheckPtr(mem), CheckPtr(form))
-		default:
-			panic("error")
-		}
-		a.fullFiledVal(form, fields[1])
-		// 使用参数，则不返回
-		return nil
-	}
-	return form
-}
-
-// SetFormScaled 设置全局窗口的Scaled
-func (a *TApplication) SetFormScaled(val bool) {
-	globalFormScaled = val
-	SetGlobalFormScaled(val)
-}
-
+// 创建一个TForm。
 //
+// Create a TForm.
+func (a *TApplication) CreateForm(fields ...interface{}) *TForm {
+	return AsForm(resObjtBuild(0, nil, a.instance, fields...))
+}
+
+// 运行APP。
+//
+// Run the app.
 func (a *TApplication) Run() {
 	Application_Run(a.instance)
 }
 
+// 初始APP信息。
+//
+// Initial APP information.
 func (a *TApplication) Initialize() {
 	Application_Initialize(a.instance)
 }

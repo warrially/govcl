@@ -1,33 +1,40 @@
 ### res2go  
 
-* ---------------------------------------------中文---------------------------------------------  
+* 中文    
+* [English](README.en-US.md)  
 
-`res2go是一个将Lazarus/Delphi资源窗口转go工具，可自动解析lfm、dfm中的组件名、组件类型、事件名称。解析lpr、dpr文件中窗口信息。`  
+----
+
+`res2go是一个将Lazarus资源窗口转go工具，可自动解析lfm、dfm中的组件名、组件类型、事件名称。解析lpr、dpr文件中窗口信息。`  
 
 命令行：  
+
 ```
-用法：res2go [-path "C:\project\"] [-outpath "C:\xxx\"] [-outmain true] [-outres true] [-scale]
-  -path      待转换的工程路径，可为空，默认以当前目录为准。
-  -outpath   输出目录，可为空，默认为当前目录。
-  -outmain   是否输出“main.go”，此为解析lpr或者dpr文件，默认输出。
-  -outres    输出一个Windows默认资源文件，如果存在则不创建，默认输出。
-  -scale     缩放窗口选项，默认为不缩放。
-  -h -help   显示帮助。
+用法：res2go [-path "C:\project\"] [-outpath "C:\xxx\"] [-watch]
+  -path       待转换的工程路径，可为空，默认以当前目录为准。
+  -outpath    输出目录，可为空，默认为当前目录。 
+  -origfn     生成的.go文件使用原始的delphi/lazarus单元名，默认为false。  
+  -pkgname    指定生成的go文件包名，默认为main。
+  -watch      监视“-path”目录的文件，如果有改变则进行转换。
+  -h -help    显示帮助。
+  -v -version 显示版本号。
 ```
 
+---- 
 
-* ---------------------------------------------English---------------------------------------------  
+### 集成到Lazarus IDE内 
 
-`res2go is a Lazarus/Delphi resource window to go tool, can automatically resolve the lfm, dfm component name, component type and event name. Parse window information in lpr, dpr file.`   
+* Lazarus IDE  
 
+打开IDE： 菜单 -> Tools -> Configure External Tools -> Add, 显示了Edit Tool窗口  
 
-Command Line:  
 ```
-usage: res2go [-path "C:\project\"] [-outpath "C:\xxx\"] [-outmain true] [-outres true] [-scale]
-  -path      The project path to be converted can be empty. The default is the directory.
-  -outpath   Output directory, can be empty, the default is the current directory.
-  -outmain   Whether to output "main.go", this is parsing lpr or dpr file, the default output.
-  -outres    Outputs a Windows default resource file, if it does not exist, the default output.
-  -scale     The window scale option, the default is false.
-  -h -help   Show help.
+Title              菜单栏显示的名字   
+Program Filename   res2go程序全文件名（含路径）   
+Parameters 命令行参数（填这句，运行后会在当前工程目录下的gocode生成代码）： -path "$Path($ProjFile())" -outpath "$Path($ProjFile())/gocode"
+Working directory  工作目录，可不填   
+
+选中"Scan output for FPC messages"  
+
+Lazarus 还可以额外填写快捷键，在Key分组里面设置。  
 ```

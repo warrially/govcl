@@ -2,18 +2,29 @@ package main
 
 import (
 	"fmt"
+	"strings"
 
+	_ "github.com/ying32/govcl/pkgs/winappres"
 	"github.com/ying32/govcl/vcl"
-	"github.com/ying32/govcl/vcl/rtl"
+	_ "github.com/ying32/govcl/vcl/locales/zh_CN"
 	"github.com/ying32/govcl/vcl/types"
 )
 
 func main() {
-	vcl.Application.SetIconResId(3)
+
 	vcl.Application.Initialize()
 	vcl.Application.SetMainFormOnTaskBar(true)
+	initComponents()
+	vcl.Application.Run()
+}
 
+func initComponents() {
 	mainForm := vcl.Application.CreateForm()
+
+	// 先禁用对齐
+	mainForm.DisableAlign()
+	defer mainForm.EnableAlign()
+
 	mainForm.SetCaption("Hello")
 	mainForm.SetPosition(types.PoScreenCenter)
 	mainForm.EnabledMaximize(false)
@@ -25,7 +36,7 @@ func main() {
 	//    dlgOpen.SetInitialDir()
 	//	dlgOpen.SetFilterIndex()
 
-	dlgOpen.SetOptions(types.TOpenOptions(rtl.Include(uint32(dlgOpen.Options()), types.OfShowHelp)))
+	dlgOpen.SetOptions(dlgOpen.Options().Include(types.OfShowHelp, types.OfAllowMultiSelect)) //rtl.Include(, types.OfShowHelp))
 	dlgOpen.SetTitle("打开")
 
 	btn := vcl.NewButton(mainForm)
@@ -40,7 +51,7 @@ func main() {
 
 	dlSave := vcl.NewSaveDialog(mainForm)
 	dlSave.SetFilter("文本文件(*.txt)|*.txt|所有文件(*.*)|*.*")
-	dlSave.SetOptions(types.TOpenOptions(rtl.Include(uint32(dlSave.Options()), types.OfShowHelp)))
+	dlSave.SetOptions(dlSave.Options().Include(types.OfShowHelp))
 	dlSave.SetTitle("保存")
 
 	btn = vcl.NewButton(mainForm)
@@ -98,25 +109,14 @@ func main() {
 		}
 	})
 
-	dlTxtOpen := vcl.NewOpenTextFileDialog(mainForm)
+	dlSelDirdlg := vcl.NewSelectDirectoryDialog(mainForm)
 	btn = vcl.NewButton(mainForm)
 	btn.SetAlign(types.AlTop)
 	btn.SetParent(mainForm)
-	btn.SetCaption("Open Text Dialog")
+	btn.SetCaption("Select Directory Dialog")
 	btn.SetOnClick(func(vcl.IObject) {
-		if dlTxtOpen.Execute() {
-			fmt.Println("Name: ", dlTxtOpen.FileName())
-		}
-	})
-
-	dlTxtSave := vcl.NewSaveTextFileDialog(mainForm)
-	btn = vcl.NewButton(mainForm)
-	btn.SetAlign(types.AlTop)
-	btn.SetParent(mainForm)
-	btn.SetCaption("Save Text Dialog")
-	btn.SetOnClick(func(vcl.IObject) {
-		if dlTxtSave.Execute() {
-			fmt.Println("Name: ", dlTxtSave.FileName())
+		if dlSelDirdlg.Execute() {
+			fmt.Println("Name: ", dlSelDirdlg.FileName())
 		}
 	})
 
@@ -135,8 +135,7 @@ func main() {
 	btn.SetParent(mainForm)
 	btn.SetCaption("SelectDirectory2")
 	btn.SetOnClick(func(vcl.IObject) {
-		options := types.TSelectDirExtOpts(rtl.Include(0, types.SdNewFolder, types.SdShowEdit, types.SdNewUI))
-		if ok, dir := vcl.SelectDirectory2("标题了", "C:/", options, nil); ok {
+		if ok, dir := vcl.SelectDirectory2("标题了", "C:/", true); ok {
 			fmt.Println("选择的目录为：", dir)
 		}
 	})
@@ -148,7 +147,7 @@ func main() {
 	findDialog := vcl.NewFindDialog(mainForm)
 	findDialog.SetOnFind(func(sender vcl.IObject) {
 		fmt.Println("FindText: ", findDialog.FindText())
-		opt := uint32(findDialog.Options())
+		opt := findDialog.Options()
 		/*
 			FrDown = iota + 0
 			FrFindNext
@@ -164,15 +163,15 @@ func main() {
 			FrWholeWord
 			FrShowHelp
 		*/
-		if rtl.InSets(opt, types.FrDown) {
+		if opt.In(types.FrDown) {
 			fmt.Println("向下")
 		} else {
 			fmt.Println("向上")
 		}
-		if rtl.InSets(opt, types.FrFindNext) {
+		if opt.In(types.FrFindNext) {
 			fmt.Println("查找下一个")
 		}
-		if rtl.InSets(opt, types.FrMatchCase) {
+		if opt.In(types.FrMatchCase) {
 			fmt.Println("区分大小写")
 		}
 	})
@@ -187,7 +186,7 @@ func main() {
 	replaceDialog := vcl.NewReplaceDialog(mainForm)
 	replaceDialog.SetOnFind(func(sender vcl.IObject) {
 		fmt.Println("FindText:", replaceDialog.FindText(), ", Relpace: ", replaceDialog.ReplaceText())
-		opt := uint32(replaceDialog.Options())
+		opt := replaceDialog.Options()
 		/*
 			FrDown = iota + 0
 			FrFindNext
@@ -203,25 +202,25 @@ func main() {
 			FrWholeWord
 			FrShowHelp
 		*/
-		if rtl.InSets(opt, types.FrDown) {
+		if opt.In(types.FrDown) {
 			fmt.Println("向下")
 		} else {
 			fmt.Println("向上")
 		}
-		if rtl.InSets(opt, types.FrFindNext) {
+		if opt.In(types.FrFindNext) {
 			fmt.Println("查找下一个")
 		}
-		if rtl.InSets(opt, types.FrMatchCase) {
+		if opt.In(types.FrMatchCase) {
 			fmt.Println("区分大小写")
 		}
 	})
 
 	replaceDialog.SetOnReplace(func(sender vcl.IObject) {
-		opt := uint32(replaceDialog.Options())
-		if rtl.InSets(opt, types.FrReplaceAll) {
+		opt := replaceDialog.Options()
+		if opt.In(types.FrReplaceAll) {
 			fmt.Println("替换全部")
 		}
-		if rtl.InSets(opt, types.FrReplace) {
+		if opt.In(types.FrReplace) {
 			fmt.Println("替换一次")
 		}
 		fmt.Println("替换字符：", replaceDialog.ReplaceText())
@@ -271,5 +270,28 @@ func main() {
 		dlPageSetupDialog.Execute()
 	})
 
-	vcl.Application.Run()
+	btn = vcl.NewButton(mainForm)
+	btn.SetAlign(types.AlTop)
+	btn.SetParent(mainForm)
+	btn.SetCaption("PasswordBox")
+	btn.SetOnClick(func(vcl.IObject) {
+		fmt.Println(vcl.PasswordBox("输入", "请输入密码："))
+	})
+
+	btn = vcl.NewButton(mainForm)
+	btn.SetAlign(types.AlTop)
+	btn.SetParent(mainForm)
+	btn.SetCaption("InputCombo")
+	// +strings.Repeat(" ", 50) 是因为显示的窗口大小会根据`aPrompt`这个计算宽度
+	btn.SetOnClick(func(vcl.IObject) {
+		fmt.Println(vcl.InputCombo("选择", "请选择一项："+strings.Repeat(" ", 50), []string{"第一项", "第二项", "第三项", "第四项"}))
+	})
+
+	btn = vcl.NewButton(mainForm)
+	btn.SetAlign(types.AlTop)
+	btn.SetParent(mainForm)
+	btn.SetCaption("InputComboEx")
+	btn.SetOnClick(func(vcl.IObject) {
+		fmt.Println(vcl.InputComboEx("选择", "请选择一项："+strings.Repeat(" ", 50), []string{"第一项", "第二项", "第三项", "第四项"}, false))
+	})
 }

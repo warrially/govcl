@@ -1,3 +1,11 @@
+//----------------------------------------
+//
+// Copyright © ying32. All Rights Reserved.
+//
+// Licensed under Apache License 2.0
+//
+//----------------------------------------
+
 package version
 
 type TArchitecture uint32
@@ -40,10 +48,12 @@ type TOSVersion struct {
 
 var OSVersion TOSVersion
 
+// CheckMajor 检测系统主版本号
 func (v *TOSVersion) CheckMajor(AMajor int) bool {
 	return v.Major >= AMajor
 }
 
+// CheckMajorMinor 检测系统主版本和子版本号
 func (v *TOSVersion) CheckMajorMinor(AMajor, AMinor int) bool {
 	return v.Major > AMajor || (v.Major == AMajor && v.Minor >= AMinor)
 }
@@ -53,6 +63,7 @@ func (v *TOSVersion) CheckMajorMinorServicePackMajor(AMajor, AMinor, AServicePac
 		((v.Major == AMajor && v.Minor == AMinor) && (v.ServicePackMajor >= AServicePackMajor))
 }
 
+// ToString 版本信息
 func (v *TOSVersion) ToString() string {
 	return v.fmtVerString
 }

@@ -1,3 +1,11 @@
+//----------------------------------------
+//
+// Copyright © ying32. All Rights Reserved.
+//
+// Licensed under Apache License 2.0
+//
+//----------------------------------------
+
 // +build windows
 
 package win
@@ -80,6 +88,16 @@ var (
 	_InvalidateRect             = user32dll.NewProc("InvalidateRect")
 	_InvalidateRgn              = user32dll.NewProc("InvalidateRgn")
 	_RedrawWindow               = user32dll.NewProc("RedrawWindow")
+
+	_SetForegroundWindow = user32dll.NewProc("SetForegroundWindow")
+
+	_EnumWindows      = user32dll.NewProc("EnumWindows")
+	_EnumChildWindows = user32dll.NewProc("EnumChildWindows")
+
+	_UnregisterHotKey = user32dll.NewProc("UnregisterHotKey")
+	_RegisterHotKey   = user32dll.NewProc("RegisterHotKey")
+
+	_DrawText = user32dll.NewProc("DrawTextW")
 )
 
 // MessageBox 消息框
@@ -146,14 +164,12 @@ func SendMessage(hWd HWND, msg uint32, wParam, lParam uintptr) uintptr {
 	return r
 }
 
-// 两个Windows未公开函数
-
 const (
-	// ChangeWindowMessageFilter  的常量
+	// ChangeWindowMessageFilter  的常量, vista+
 	MSGFLT_ADD    = 1
 	MSGFLT_REMOVE = 2
 
-	// ChangeWindowMessageFilterEx的常量
+	// ChangeWindowMessageFilterEx的常量, win7+
 	MSGFLT_RESET    = 0
 	MSGFLT_ALLOW    = 1
 	MSGFLT_DISALLOW = 2
@@ -466,4 +482,34 @@ func InvalidateRgn(hWnd HWND, hRgn HRGN, bErase bool) bool {
 func RedrawWindow(hWnd HWND, lprcUpdate *TRect, hrgnUpdate HRGN, flags uint32) bool {
 	r, _, _ := _RedrawWindow.Call(uintptr(hWnd), uintptr(unsafe.Pointer(lprcUpdate)), uintptr(hrgnUpdate), uintptr(flags))
 	return r != 0
+}
+
+func SetForegroundWindow(hWnd HWND) bool {
+	r, _, _ := _SetForegroundWindow.Call(uintptr(hWnd))
+	return r != 0
+}
+
+func EnumWindows(lpEnumFunc TFNWndEnumProc, lParam uintptr) bool {
+	r, _, _ := _EnumWindows.Call(uintptr(lpEnumFunc), lParam)
+	return r != 0
+}
+
+func EnumChildWindows(hWndParent HWND, lpEnumFunc TFNWndEnumProc, lParam uintptr) bool {
+	r, _, _ := _EnumChildWindows.Call(uintptr(hWndParent), uintptr(lpEnumFunc), lParam)
+	return r != 0
+}
+
+func UnregisterHotKey(hWnd HWND, id int32) bool {
+	r, _, _ := _UnregisterHotKey.Call(uintptr(hWnd), uintptr(id))
+	return r != 0
+}
+
+func RegisterHotKey(hWnd HWND, id int32, fsModifiers, vk uint32) bool {
+	r, _, _ := _RegisterHotKey.Call(uintptr(hWnd), uintptr(id), uintptr(fsModifiers), uintptr(vk))
+	return r != 0
+}
+
+func DrawText(hDC HDC, lpString string, nCount int32, lpRect *TRect, uFormat uint32) int32 {
+	r, _, _ := _DrawText.Call(uintptr(hDC), CStr(lpString), uintptr(nCount), uintptr(unsafe.Pointer(lpRect)), uintptr(uFormat))
+	return int32(r)
 }

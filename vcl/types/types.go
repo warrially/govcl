@@ -1,67 +1,107 @@
+//----------------------------------------
+//
+// Copyright © ying32. All Rights Reserved.
+//
+// Licensed under Apache License 2.0
+//
+//----------------------------------------
+
 package types
 
 type TPoint struct {
-	X, Y int32
+	X int32
+	Y int32
 }
 
 type TRect struct {
-	Left, Top, Right, Bottom int32
+	Left   int32
+	Top    int32
+	Right  int32
+	Bottom int32
 }
 
 type TSize struct {
-	Cx, Cy int32
+	Cx int32
+	Cy int32
 }
 
-type HWND uintptr
+type HWND = uintptr
 
-type HBITMAP uintptr
+type HBITMAP = uintptr
 
-type HMENU uintptr
+type HMENU = uintptr
 
-type HICON uintptr
+type HICON = uintptr
 
-type HDC uintptr
+type HDC = uintptr
 
-type HFONT uintptr
+type HFONT = uintptr
 
-type HBRUSH uintptr
+type HBRUSH = uintptr
 
-type HPEN uintptr
+type HPEN = uintptr
 
-type HKEY uintptr
+type HKEY = uintptr
 
-type HMONITOR uintptr
+type HMONITOR = uintptr
 
-type HGDIOBJ uintptr
+type HGDIOBJ = uintptr
 
-type HMODULE uintptr
+type HMODULE = uintptr
 
-type COLORREF uint32
+type COLORREF = uint32
 
-type DWORD uint32
+type DWORD = uint32
 
-type HCURSOR HICON
+type HCURSOR = HICON
 
-type HINST uintptr
+type HINST = uintptr
 
-type LPCWSTR uintptr
+type LPCWSTR = uintptr
 
-type HRGN uintptr
+type HRGN = uintptr
 
-type UINT uint32
+type UINT = uint32
 
-type LPARAM uintptr
+type LPARAM = uintptr
 
-type WAPRAM uintptr
+type WPARAM = uintptr
+
+type LRESULT = uintptr
+
+type HResult = uintptr
+
+type HPALETTE = uintptr
+
+type HRSRC = uintptr
+
+type HGLOBAL = uintptr
+
+type TFNWndEnumProc = uintptr
+
+type TXID = uint64
+
+type ATOM = uint16
+
+type TAtom = uint16
+
+type SIZE_T = uintptr
+
+// Pascal集合类型 set of xxx
+type TSet uint32
 
 //----------------------------------------------------------------------------------------------------------------------
 // -- TRect
 
-func (r *TRect) PtInRect(P TPoint) bool {
+func Rect(left, top, right, bottom int32) TRect {
+	return TRect{Left: left, Top: top, Right: right, Bottom: bottom}
+}
+
+func (r TRect) PtInRect(P TPoint) bool {
 	return P.X >= r.Left && P.X < r.Right && P.Y >= r.Top && P.Y < r.Bottom
 }
 
-func (r *TRect) Width() int32 {
+func (r TRect) Width() int32 {
 	return r.Right - r.Left
 }
 
@@ -69,7 +109,7 @@ func (r *TRect) SetWidth(val int32) {
 	r.Right = r.Left + val
 }
 
-func (r *TRect) Height() int32 {
+func (r TRect) Height() int32 {
 	return r.Bottom - r.Top
 }
 
@@ -77,7 +117,7 @@ func (r *TRect) SetHeight(val int32) {
 	r.Bottom = r.Top + val
 }
 
-func (r *TRect) IsEmpty() bool {
+func (r TRect) IsEmpty() bool {
 	return r.Right <= r.Left || r.Bottom <= r.Top
 }
 
@@ -88,9 +128,8 @@ func (r *TRect) Empty() {
 	r.Bottom = 0
 }
 
-func (r *TRect) Size() TSize {
-	s := TSize{r.Width(), r.Height()}
-	return s
+func (r TRect) Size() TSize {
+	return TSize{r.Width(), r.Height()}
 }
 
 func (r *TRect) SetSize(w, h int32) {
@@ -105,15 +144,15 @@ func (r *TRect) Inflate(dx, dy int32) {
 	r.Bottom += dy
 }
 
-func (r *TRect) Contains(aR TRect) bool {
+func (r TRect) Contains(aR TRect) bool {
 	return r.Left <= aR.Left && r.Right >= aR.Right && r.Top <= aR.Top && r.Bottom >= aR.Bottom
 }
 
-func (r *TRect) IntersectsWith(aR TRect) bool {
+func (r TRect) IntersectsWith(aR TRect) bool {
 	return r.Left < aR.Right && r.Right > aR.Left && r.Top < aR.Bottom && r.Bottom > aR.Top
 }
 
-func (r *TRect) CenterPoint() (ret TPoint) {
+func (r TRect) CenterPoint() (ret TPoint) {
 	ret.X = (r.Right-r.Left)/2 + r.Left
 	ret.Y = (r.Bottom-r.Top)/2 + r.Top
 	return
@@ -132,7 +171,11 @@ func (r *TRect) Scale2(val int) {
 
 // -- TPoint
 
-func (p *TPoint) IsZero() bool {
+func Point(x, y int32) TPoint {
+	return TPoint{X: x, Y: y}
+}
+
+func (p TPoint) IsZero() bool {
 	return p.X == 0 && p.Y == 0
 }
 
@@ -180,4 +223,52 @@ type TWndClass struct {
 	HbrBackground HBRUSH
 	LpszMenuName  LPCWSTR
 	LpszClassName LPCWSTR
+}
+
+// TGestureEventInfo
+//type TGestureEventInfo struct {
+//	GestureID     TGestureID
+//	Location      TPoint
+//	Flags         TInteractiveGestureFlags
+//	Angle         float64
+//	InertiaVector TSmallPoint
+//	//case Integer of
+//	//	0: (Distance: Integer);
+//	//	1: (TapLocation: TSmallPoint);
+//	//	end;
+//	TapLocation TSmallPoint
+//}
+
+// -------------- TSet
+
+// 新建TSet，初始值为0，然后添加元素
+func NewSet(opts ...uint8) TSet {
+	var s TSet
+	return s.Include(opts...)
+}
+
+// 集合加法，val...中存储为位的索引，下标为0
+func (s TSet) Include(val ...uint8) TSet {
+	r := uint32(s)
+	for _, v := range val {
+		r |= (1 << uint8(v))
+	}
+	return TSet(r)
+}
+
+// 集合减法，val...中存储为位的索引，下标为0
+func (s TSet) Exclude(val ...uint8) TSet {
+	r := uint32(s)
+	for _, v := range val {
+		r &= ^(1 << uint8(v))
+	}
+	return TSet(r)
+}
+
+// 集合类型的判断，val表示位数，下标为0
+func (s TSet) In(val uint32) bool {
+	if s&(1<<uint8(val)) != 0 {
+		return true
+	}
+	return false
 }

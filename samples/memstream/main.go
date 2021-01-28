@@ -4,34 +4,20 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	//	"syscall"
 
-	"github.com/ying32/govcl/vcl"
 	"github.com/ying32/govcl/vcl/rtl"
+	//	"syscall"
+	_ "github.com/ying32/govcl/pkgs/winappres"
+	"github.com/ying32/govcl/vcl"
 	"github.com/ying32/govcl/vcl/types"
 )
-
-//var (
-//	kernel32            = syscall.NewLazyDLL("kernel32.dll")
-//	_GetCurrentThreadId = kernel32.NewProc("GetCurrentThreadId")
-//)
-
-func GetCurrentThreadId() uintptr {
-	//r, _, _ := _GetCurrentThreadId.Call()
-	//return r
-	return 0
-}
 
 func main() {
 
 	fmt.Println("main:currentThreadId:", GetCurrentThreadId())
-	icon := vcl.NewIcon()
-	defer icon.Free()
-	icon.LoadFromResourceID(rtl.MainInstance(), 3)
 
 	vcl.Application.Initialize()
 	vcl.Application.SetMainFormOnTaskBar(true)
-	vcl.Application.SetIcon(icon)
 
 	mainForm := vcl.Application.CreateForm()
 	mainForm.SetCaption("Hello")
@@ -43,10 +29,15 @@ func main() {
 	img := vcl.NewImage(mainForm)
 	img.SetParent(mainForm)
 	// 本地加载
-	mem := vcl.NewMemoryStream()
-	defer mem.Free()
-	mem.LoadFromFile("..\\..\\imgs\\1.jpg")
-	img.Picture().LoadFromStream(mem)
+	jpgFileName := "./1.jpg"
+	if rtl.FileExists(jpgFileName) {
+		mem := vcl.NewMemoryStream()
+		mem.LoadFromFile(jpgFileName)
+		mem.SetPosition(0)
+		img.Picture().LoadFromStream(mem)
+		mem.Free()
+	}
+
 	// 网络图片加载
 	img2 := vcl.NewImage(mainForm)
 	img2.SetParent(mainForm)

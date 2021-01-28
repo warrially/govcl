@@ -1,3 +1,11 @@
+//----------------------------------------
+//
+// Copyright © ying32. All Rights Reserved.
+//
+// Licensed under Apache License 2.0
+//
+//----------------------------------------
+
 package api
 
 var (
@@ -6,32 +14,33 @@ var (
 	application_Run        = libvcl.NewProc("Application_Run")
 	application_Initialize = libvcl.NewProc("Application_Initialize")
 
+	form_Create2                = libvcl.NewProc("Form_Create2")
 	form_EnabledMaximize        = libvcl.NewProc("Form_EnabledMaximize")
 	form_EnabledMinimize        = libvcl.NewProc("Form_EnabledMinimize")
 	form_EnabledSystemMenu      = libvcl.NewProc("Form_EnabledSystemMenu")
-	form_SetAllowDropFiles      = libvcl.NewProc("Form_SetAllowDropFiles")
-	form_GetAllowDropFiles      = libvcl.NewProc("Form_GetAllowDropFiles")
-	form_SetOnDropFiles         = libvcl.NewProc("Form_SetOnDropFiles")
 	form_SetOnDestroy           = libvcl.NewProc("Form_SetOnDestroy")
 	form_SetOnConstrainedResize = libvcl.NewProc("Form_SetOnConstrainedResize")
-	form_SetOnDeactivate        = libvcl.NewProc("Form_SetOnDeactivate")
-	form_SetOnActivate          = libvcl.NewProc("Form_SetOnActivate")
+	form_SetOnWndProc           = libvcl.NewProc("Form_SetOnWndProc")
 
-	setEventCallback = libvcl.NewProc("SetEventCallback")
-	dGetParam        = libvcl.NewProc("DGetParam")
-	dGetStringArrOf  = libvcl.NewProc("DGetStringArrOf")
-	dStrLen          = libvcl.NewProc("DStrLen")
-	dMove            = libvcl.NewProc("DMove")
+	form_ShowInTaskBar      = libvcl.NewProc("Form_ShowInTaskBar")
+	form_ScaleForCurrentDpi = libvcl.NewProc("Form_ScaleForCurrentDpi")
+	form_InheritedWndProc   = libvcl.NewProc("Form_InheritedWndProc")
 
-	dShowMessage     = libvcl.NewProc("DShowMessage")
-	dGetMainInstance = libvcl.NewProc("DGetMainInstance")
-	dMessageDlg      = libvcl.NewProc("DMessageDlg")
+	setEventCallback      = libvcl.NewProc("SetEventCallback")
+	setMessageCallback    = libvcl.NewProc("SetMessageCallback")
+	setThreadSyncCallback = libvcl.NewProc("SetThreadSyncCallback")
+
+	dGetStringArrOf = libvcl.NewProc("DGetStringArrOf")
+	dStrLen         = libvcl.NewProc("DStrLen")
+	dMove           = libvcl.NewProc("DMove")
+
+	dShowMessage = libvcl.NewProc("DShowMessage")
+	dMessageDlg  = libvcl.NewProc("DMessageDlg")
 
 	mouse_Instance  = libvcl.NewProc("Mouse_Instance")
 	screen_Instance = libvcl.NewProc("Screen_Instance")
 
-	dSetReportMemoryLeaksOnShutdown = libvcl.NewProc("DSetReportMemoryLeaksOnShutdown")
-	dSynchronize                    = libvcl.NewProc("DSynchronize")
+	dSynchronize = libvcl.NewProc("DSynchronize")
 
 	// TMenuItem
 	dTextToShortCut = libvcl.NewProc("DTextToShortCut")
@@ -59,6 +68,12 @@ var (
 	canvas_StretchDraw   = libvcl.NewProc("Canvas_StretchDraw")
 	canvas_TextRect1     = libvcl.NewProc("Canvas_TextRect1")
 	canvas_TextRect2     = libvcl.NewProc("Canvas_TextRect2")
+	canvas_Polygon       = libvcl.NewProc("Canvas_Polygon")
+	canvas_Polyline      = libvcl.NewProc("Canvas_Polyline")
+	canvas_PolyBezier    = libvcl.NewProc("Canvas_PolyBezier")
+	canvas_PolyBezierTo  = libvcl.NewProc("Canvas_PolyBezierTo")
+	canvas_Pixels        = libvcl.NewProc("Canvas_Pixels")
+	canvas_SetPixels     = libvcl.NewProc("Canvas_SetPixels")
 
 	// TImageList
 	imageList_Draw1        = libvcl.NewProc("ImageList_Draw1")
@@ -68,6 +83,12 @@ var (
 	imageList_GetIcon1     = libvcl.NewProc("ImageList_GetIcon1")
 	imageList_GetIcon2     = libvcl.NewProc("ImageList_GetIcon2")
 
+	// TBitmap
+	bitmap_Clear          = libvcl.NewProc("Bitmap_Clear")
+	bitmap_BeginUpdate    = libvcl.NewProc("Bitmap_BeginUpdate")
+	bitmap_EndUpdate      = libvcl.NewProc("Bitmap_EndUpdate")
+	bitmap_LoadFromDevice = libvcl.NewProc("Bitmap_LoadFromDevice")
+
 	dExtractFilePath = libvcl.NewProc("DExtractFilePath")
 	dFileExists      = libvcl.NewProc("DFileExists")
 
@@ -75,9 +96,53 @@ var (
 	dSelectDirectory2 = libvcl.NewProc("DSelectDirectory2")
 	dInputBox         = libvcl.NewProc("DInputBox")
 	dInputQuery       = libvcl.NewProc("DInputQuery")
+	dPasswordBox      = libvcl.NewProc("DPasswordBox")
+	dInputCombo       = libvcl.NewProc("DInputCombo")
+	dInputComboEx     = libvcl.NewProc("DInputComboEx")
 
 	// TForm相关设置
-	setGlobalFormScaled      = libvcl.NewProc("SetGlobalFormScaled")
 	form_ScaleForPPI         = libvcl.NewProc("Form_ScaleForPPI")
 	form_ScaleControlsForDpi = libvcl.NewProc("Form_ScaleControlsForDpi")
+
+	// TSysLocaled
+	dSysLocale = libvcl.NewProc("DSysLocale")
+
+	// Shortcut
+	dCreateURLShortCut = libvcl.NewProc("DCreateURLShortCut")
+	dCreateShortCut    = libvcl.NewProc("DCreateShortCut")
+
+	// SetProperty
+	dSetPropertyValue    = libvcl.NewProc("DSetPropertyValue")
+	dSetPropertySecValue = libvcl.NewProc("DSetPropertySecValue")
+
+	// Printer
+	printer_Instance   = libvcl.NewProc("Printer_Instance")
+	printer_SetPrinter = libvcl.NewProc("Printer_SetPrinter")
+
+	// guid
+	dGUIDToString = libvcl.NewProc("DGUIDToString")
+	dStringToGUID = libvcl.NewProc("DStringToGUID")
+	dCreateGUID   = libvcl.NewProc("DCreateGUID")
+
+	// libResources
+	dGetLibResourceCount = libvcl.NewProc("DGetLibResourceCount")
+	dGetLibResourceItem  = libvcl.NewProc("DGetLibResourceItem")
+	dModifyLibResource   = libvcl.NewProc("DModifyLibResource")
+	dLibAbout            = libvcl.NewProc("DLibAbout")
+
+	// 库的信息
+	dLibStringEncoding = libvcl.NewProc("DLibStringEncoding")
+	dLibVersion        = libvcl.NewProc("DLibVersion")
+
+	dMainThreadId    = libvcl.NewProc("DMainThreadId")
+	dCurrentThreadId = libvcl.NewProc("DCurrentThreadId")
+
+	dInitGoDll = libvcl.NewProc("DInitGoDll")
+
+	dFindControl           = libvcl.NewProc("DFindControl")
+	dFindLCLControl        = libvcl.NewProc("DFindLCLControl")
+	dFindOwnerControl      = libvcl.NewProc("DFindOwnerControl")
+	dFindControlAtPosition = libvcl.NewProc("DFindControlAtPosition")
+	dFindLCLWindow         = libvcl.NewProc("DFindLCLWindow")
+	dFindDragTarget        = libvcl.NewProc("DFindDragTarget")
 )

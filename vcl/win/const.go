@@ -1,3 +1,11 @@
+//----------------------------------------
+//
+// Copyright © ying32. All Rights Reserved.
+//
+// Licensed under Apache License 2.0
+//
+//----------------------------------------
+
 package win
 
 //  MessageBox() Flags
@@ -547,4 +555,261 @@ const (
 	BLACKNESS   = 0x00000042 /* dest = BLACK                     */
 	WHITENESS   = 0x00FF0062 /* dest = WHITE */
 
+)
+
+const (
+	// SHGetSpecialFolderLocation
+	//
+	//  Caller should use SHGetMalloc to obtain an allocator that can free the pidl
+	//
+	// registry entries for special paths are kept in :
+	// REGSTR_PATH_SPECIAL_FOLDERS   = REGSTR_PATH_EXPLORER + '\Shell Folders' //注释掉先
+
+	CSIDL_DESKTOP                 = 0x0000         // <desktop>
+	CSIDL_INTERNET                = 0x0001         // Internet Explorer (icon on desktop)
+	CSIDL_PROGRAMS                = 0x0002         // Start Menu\Programs
+	CSIDL_CONTROLS                = 0x0003         // My Computer\Control Panel
+	CSIDL_PRINTERS                = 0x0004         // My Computer\Printers
+	CSIDL_PERSONAL                = 0x0005         // My Documents
+	CSIDL_FAVORITES               = 0x0006         // <user name>\Favorites
+	CSIDL_STARTUP                 = 0x0007         // Start Menu\Programs\Startup
+	CSIDL_RECENT                  = 0x0008         // <user name>\Recent
+	CSIDL_SENDTO                  = 0x0009         // <user name>\SendTo
+	CSIDL_BITBUCKET               = 0x000a         // <desktop>\Recycle Bin
+	CSIDL_STARTMENU               = 0x000b         // <user name>\Start Menu
+	CSIDL_MYDOCUMENTS             = CSIDL_PERSONAL // Personal was just a silly name for My Documents
+	CSIDL_MYMUSIC                 = 0x000d         // "My Music" folder
+	CSIDL_MYVIDEO                 = 0x000e         // "My Videos" folder
+	CSIDL_DESKTOPDIRECTORY        = 0x0010         // <user name>\Desktop
+	CSIDL_DRIVES                  = 0x0011         // My Computer
+	CSIDL_NETWORK                 = 0x0012         // Network Neighborhood (My Network Places)
+	CSIDL_NETHOOD                 = 0x0013         // <user name>\nethood
+	CSIDL_FONTS                   = 0x0014         // windows\fonts
+	CSIDL_TEMPLATES               = 0x0015
+	CSIDL_COMMON_STARTMENU        = 0x0016 // All Users\Start Menu
+	CSIDL_COMMON_PROGRAMS         = 0x0017 // All Users\Start Menu\Programs
+	CSIDL_COMMON_STARTUP          = 0x0018 // All Users\Startup
+	CSIDL_COMMON_DESKTOPDIRECTORY = 0x0019 // All Users\Desktop
+	CSIDL_APPDATA                 = 0x001a // <user name>\Application Data
+	CSIDL_PRINTHOOD               = 0x001b // <user name>\PrintHood
+	CSIDL_LOCAL_APPDATA           = 0x001c // <user name>\Local Settings\Applicaiton Data (non roaming)
+	CSIDL_ALTSTARTUP              = 0x001d // non localized startup
+	CSIDL_COMMON_ALTSTARTUP       = 0x001e // non localized common startup
+	CSIDL_COMMON_FAVORITES        = 0x001f
+	CSIDL_INTERNET_CACHE          = 0x0020
+	CSIDL_COOKIES                 = 0x0021
+	CSIDL_HISTORY                 = 0x0022
+	CSIDL_COMMON_APPDATA          = 0x0023 // All Users\Application Data
+	CSIDL_WINDOWS                 = 0x0024 // GetWindowsDirectory()
+	CSIDL_SYSTEM                  = 0x0025 // GetSystemDirectory()
+	CSIDL_PROGRAM_FILES           = 0x0026 // C:\Program Files
+	CSIDL_MYPICTURES              = 0x0027 // C:\Program Files\My Pictures
+	CSIDL_PROFILE                 = 0x0028 // USERPROFILE
+	CSIDL_SYSTEMX86               = 0x0029 // x86 system directory on RISC
+	CSIDL_PROGRAM_FILESX86        = 0x002a // x86 C:\Program Files on RISC
+	CSIDL_PROGRAM_FILES_COMMON    = 0x002b // C:\Program Files\Common
+	CSIDL_PROGRAM_FILES_COMMONX86 = 0x002c // x86 Program Files\Common on RISC
+	CSIDL_COMMON_TEMPLATES        = 0x002d // All Users\Templates
+	CSIDL_COMMON_DOCUMENTS        = 0x002e // All Users\Documents
+	CSIDL_COMMON_ADMINTOOLS       = 0x002f // All Users\Start Menu\Programs\Administrative Tools
+	CSIDL_ADMINTOOLS              = 0x0030 // <user name>\Start Menu\Programs\Administrative Tools
+	CSIDL_CONNECTIONS             = 0x0031 // Network and Dial-up Connections
+	CSIDL_COMMON_MUSIC            = 0x0035 // All Users\My Music
+	CSIDL_COMMON_PICTURES         = 0x0036 // All Users\My Pictures
+	CSIDL_COMMON_VIDEO            = 0x0037 // All Users\My Video
+	CSIDL_RESOURCES               = 0x0038 // Resource Direcotry
+	CSIDL_RESOURCES_LOCALIZED     = 0x0039 // Localized Resource Direcotry
+	CSIDL_COMMON_OEM_LINKS        = 0x003a // Links to All Users OEM specific apps
+	CSIDL_CDBURN_AREA             = 0x003b // USERPROFILE\Local Settings\Application Data\Microsoft\CD Burning
+	// unused                               0x003c
+	CSIDL_COMPUTERSNEARME    = 0x003d // Computers Near Me (computered from Workgroup membership)
+	CSIDL_FLAG_CREATE        = 0x8000 // combine with CSIDL_ value to force folder creation in SHGetFolderPath()
+	CSIDL_FLAG_DONT_VERIFY   = 0x4000 // combine with CSIDL_ value to return an unverified folder path
+	CSIDL_FLAG_DONT_UNEXPAND = 0x2000 // combine with CSIDL_ value to avoid unexpanding environment variables
+	CSIDL_FLAG_NO_ALIAS      = 0x1000 // combine with CSIDL_ value to insure non-alias versions of the pidl
+	CSIDL_FLAG_PER_USER_INIT = 0x0800 // combine with CSIDL_ value to indicate per-user init (eg. upgrade)
+	CSIDL_FLAG_MASK          = 0xFF00 // mask for all possible flag values
+)
+
+const (
+	INVALID_HANDLE_VALUE = ^(-1)
+)
+
+/* Init/Uninit */
+
+const (
+	// flags passed as the coInit parameter to CoInitializeEx.
+	COINIT_MULTITHREADED     = 0 // OLE calls objects on any thread.
+	COINIT_APARTMENTTHREADED = 2 // Apartment model
+	COINIT_DISABLE_OLE1DDE   = 4 // Dont use DDE for Ole1 support.
+	COINIT_SPEED_OVER_MEMORY = 8 // Trade memory for speed
+)
+
+const (
+
+	/* Predefined Resource Types */
+	RT_CURSOR       = 1
+	RT_BITMAP       = 2
+	RT_ICON         = 3
+	RT_MENU         = 4
+	RT_DIALOG       = 5
+	RT_STRING       = 6
+	RT_FONTDIR      = 7
+	RT_FONT         = 8
+	RT_ACCELERATOR  = 9
+	RT_RCDATA       = 10
+	RT_MESSAGETABLE = 11
+
+	DIFFERENCE = 11
+
+	RT_GROUP_CURSOR = RT_CURSOR + DIFFERENCE
+	RT_GROUP_ICON   = RT_ICON + DIFFERENCE
+	RT_VERSION      = 16
+	RT_DLGINCLUDE   = 17
+	RT_PLUGPLAY     = 19
+	RT_VXD          = 20
+	RT_ANICURSOR    = 21
+	RT_ANIICON      = 22
+	RT_HTML         = 23
+	RT_MANIFEST     = 24
+)
+
+/* ====== Ranges for control message IDs ======================= */
+
+const (
+	HDM_FIRST = 0x1200 /* Header messages */
+	TCM_FIRST = 0x1300 /* Tab control messages */
+	PGM_FIRST = 0x1400 /* Pager control messages */
+	/* For Windows >= XP */
+	ECM_FIRST = 0x1500 /* Edit control messages */
+	BCM_FIRST = 0x1600 /* Button control messages */
+	CBM_FIRST = 0x1700 /* Combobox control messages */
+
+	CCM_FIRST = 0x2000 /* Common control shared messages */
+	CCM_LAST  = CCM_FIRST + 0x200
+
+	CCM_SETBKCOLOR = CCM_FIRST + 1 // lParam is bkColo
+)
+
+const (
+	/* Background Modes */
+	TRANSPARENT = 1
+	OPAQUE      = 2
+	BKMODE_LAST = 2
+
+	/* Graphics Modes */
+	GM_COMPATIBLE = 1
+	GM_ADVANCED   = 2
+	GM_LAST       = 2
+)
+
+const (
+	MOD_ALT      = 1
+	MOD_CONTROL  = 2
+	MOD_SHIFT    = 4
+	MOD_WIN      = 8
+	MOD_NOREPEAT = 0x4000
+)
+
+// Begin ShellExecuteEx and family
+/* ShellExecute() and ShellExecuteEx() error codes */
+const (
+	/* regular WinExec() codes */
+	SE_ERR_FNF          = 2 /* file not found */
+	SE_ERR_PNF          = 3 /* path not found */
+	SE_ERR_ACCESSDENIED = 5 /* access denied */
+	SE_ERR_OOM          = 8 /* out of memory */
+	SE_ERR_DLLNOTFOUND  = 32
+
+	/* error values for ShellExecute() beyond the regular WinExec() codes */
+	SE_ERR_SHARE           = 26
+	SE_ERR_ASSOCINCOMPLETE = 27
+	SE_ERR_DDETIMEOUT      = 28
+	SE_ERR_DDEFAIL         = 29
+	SE_ERR_DDEBUSY         = 30
+	SE_ERR_NOASSOC         = 31
+
+	/* Note CLASSKEY overrides CLASSNAME */
+	SEE_MASK_DEFAULT   = 0x00000000
+	SEE_MASK_CLASSNAME = 0x00000001
+	SEE_MASK_CLASSKEY  = 0x00000003
+	/* Note INVOKEIDLIST overrides IDLIST */
+	SEE_MASK_IDLIST            = 0x00000004
+	SEE_MASK_INVOKEIDLIST      = 0x0000000c
+	SEE_MASK_ICON              = 0x00000010
+	SEE_MASK_HOTKEY            = 0x00000020
+	SEE_MASK_NOCLOSEPROCESS    = 0x00000040
+	SEE_MASK_CONNECTNETDRV     = 0x00000080
+	SEE_MASK_NOASYNC           = 0x00000100
+	SEE_MASK_FLAG_DDEWAIT      = SEE_MASK_NOASYNC
+	SEE_MASK_DOENVSUBST        = 0x00000200
+	SEE_MASK_FLAG_NO_UI        = 0x00000400
+	SEE_MASK_UNICODE           = 0x00004000
+	SEE_MASK_NO_CONSOLE        = 0x00008000
+	SEE_MASK_ASYNCOK           = 0x00100000
+	SEE_MASK_HMONITOR          = 0x00200000 // SHELLEXECUTEINFO.hMonitor
+	SEE_MASK_NOZONECHECKS      = 0x00800000
+	SEE_MASK_NOQUERYCLASSSTORE = 0x01000000
+	SEE_MASK_WAITFORINPUTIDLE  = 0x02000000
+	SEE_MASK_FLAG_LOG_USAGE    = 0x04000000
+)
+
+const (
+	PAGE_NOACCESS          = 1
+	PAGE_READONLY          = 2
+	PAGE_READWRITE         = 4
+	PAGE_WRITECOPY         = 8
+	PAGE_EXECUTE           = 0x10
+	PAGE_EXECUTE_READ      = 0x20
+	PAGE_EXECUTE_READWRITE = 0x40
+	PAGE_EXECUTE_WRITECOPY = 0x80
+	PAGE_GUARD             = 0x100
+	PAGE_NOCACHE           = 0x200
+	MEM_COMMIT             = 0x1000
+	MEM_RESERVE            = 0x2000
+	MEM_DECOMMIT           = 0x4000
+	MEM_RELEASE            = 0x8000
+	MEM_FREE               = 0x10000
+	MEM_PRIVATE            = 0x20000
+	MEM_MAPPED             = 0x40000
+	MEM_RESET              = 0x80000
+	MEM_TOP_DOWN           = 0x100000
+	MEM_PHYSICAL           = 0x400000
+	MEM_RESET_UNDO         = 0x1000000
+	MEM_LARGE_PAGES        = 0x20000000
+	SEC_FILE               = 0x800000
+	SEC_IMAGE              = 0x1000000
+	SEC_RESERVE            = 0x4000000
+	SEC_COMMIT             = 0x8000000
+	SEC_NOCACHE            = 0x10000000
+	MEM_IMAGE              = SEC_IMAGE
+)
+
+const (
+	/* DrawText() Format Flags */
+	DT_TOP             = 0
+	DT_LEFT            = 0
+	DT_CENTER          = 1
+	DT_RIGHT           = 2
+	DT_VCENTER         = 4
+	DT_BOTTOM          = 8
+	DT_WORDBREAK       = 0x10
+	DT_SINGLELINE      = 0x20
+	DT_EXPANDTABS      = 0x40
+	DT_TABSTOP         = 0x80
+	DT_NOCLIP          = 0x100
+	DT_EXTERNALLEADING = 0x200
+	DT_CALCRECT        = 0x400
+	DT_NOPREFIX        = 0x800
+	DT_INTERNAL        = 0x1000
+
+	DT_EDITCONTROL          = 0x2000
+	DT_PATH_ELLIPSIS        = 0x4000
+	DT_END_ELLIPSIS         = 0x8000
+	DT_MODIFYSTRING         = 0x10000
+	DT_RTLREADING           = 0x20000
+	DT_WORD_ELLIPSIS        = 0x40000
+	DT_NOFULLWIDTHCHARBREAK = 0x0080000
+	DT_HIDEPREFIX           = 0x00100000
+	DT_PREFIXONLY           = 0x00200000
 )

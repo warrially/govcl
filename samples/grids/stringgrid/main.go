@@ -3,13 +3,13 @@ package main
 import (
 	"fmt"
 
+	_ "github.com/ying32/govcl/pkgs/winappres"
 	"github.com/ying32/govcl/vcl"
 	"github.com/ying32/govcl/vcl/types"
 )
 
 func main() {
 	vcl.Application.Initialize()
-	vcl.Application.SetFormScaled(true)
 	mainForm := vcl.Application.CreateForm()
 	mainForm.SetWidth(700)
 	mainForm.SetHeight(500)

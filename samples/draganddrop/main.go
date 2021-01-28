@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 
+	_ "github.com/ying32/govcl/pkgs/winappres"
 	"github.com/ying32/govcl/vcl"
 	"github.com/ying32/govcl/vcl/types"
 )
@@ -28,20 +29,20 @@ func main() {
 
 	tv.SetOnDragOver(func(sender, source vcl.IObject, x, y int32, state types.TDragState, accept *bool) {
 		*accept = false
-		if source.IsValid() {
-			node := vcl.TreeViewFromObj(source).GetNodeAt(x, y)
-			selnode := vcl.TreeViewFromObj(source).Selected()
-			if node.IsValid() && selnode.IsValid() {
-				*accept = selnode.Parent().Instance() != node.Parent().Instance()
+		if source != nil {
+			node := vcl.AsTreeView(source).GetNodeAt(x, y)
+			selnode := vcl.AsTreeView(source).Selected()
+			if node != nil && selnode != nil {
+				*accept = !vcl.EqualsObject(selnode.Parent(), node.Parent())
 			}
 		}
 	})
 
 	tv.SetOnEndDrag(func(sender, target vcl.IObject, x, y int32) {
-		if target.IsValid() {
+		if target != nil {
 			node := tv.GetNodeAt(x, y)
 			selnode := tv.Selected()
-			if node.IsValid() && selnode.IsValid() {
+			if node != nil && selnode != nil {
 				selnode.MoveTo(node, types.NaInsert) // NaAdd
 			}
 		}

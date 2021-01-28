@@ -1,19 +1,17 @@
 package main
 
 import (
+	_ "github.com/ying32/govcl/pkgs/macapp"
+	_ "github.com/ying32/govcl/pkgs/winappres"
 	"github.com/ying32/govcl/vcl"
-	"github.com/ying32/govcl/vcl/exts/tools"
 	"github.com/ying32/govcl/vcl/rtl"
 	"github.com/ying32/govcl/vcl/types"
 )
 
 func main() {
-	// mac下记得发布时去掉
-	tools.RunWithMacOSApp()
 
 	path := rtl.ExtractFilePath(vcl.Application.ExeName())
 
-	vcl.Application.SetIconResId(3)
 	vcl.Application.Initialize()
 	vcl.Application.SetMainFormOnTaskBar(true)
 

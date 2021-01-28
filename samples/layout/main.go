@@ -1,19 +1,17 @@
 package main
 
 import (
+	"fmt"
+
+	_ "github.com/ying32/govcl/pkgs/winappres"
 	"github.com/ying32/govcl/vcl"
-	"github.com/ying32/govcl/vcl/exts/tools"
-	"github.com/ying32/govcl/vcl/rtl"
 	"github.com/ying32/govcl/vcl/types"
 	"github.com/ying32/govcl/vcl/types/colors"
 )
 
 // 简单介绍下Delphi中控件的布局方式
 func main() {
-	// mac下发布时去掉，只在测试时使用
-	tools.RunWithMacOSApp()
 
-	vcl.Application.SetIconResId(3)
 	vcl.Application.Initialize()
 	vcl.Application.SetMainFormOnTaskBar(true)
 
@@ -144,52 +142,59 @@ func main() {
 	sheet = vcl.NewTabSheet(mainForm)
 	sheet.SetPageControl(pgc)
 	sheet.SetCaption("Anchors")
-	// windows下貌似有问题。。。
-	var w, h int32
-	if rtl.LcLLoaded() {
-		w = sheet.ClientWidth()
-		h = sheet.ClientHeight()
-	} else {
-		w = sheet.Width()
-		h = sheet.Height()
-	}
+
+	pnl = vcl.NewPanel(mainForm)
+	pnl.SetParentBackground(false)
+	//pnl.SetColor(colors.ClBlue)
+	pnl.SetParent(sheet)
+	pnl.SetAlign(types.AlClient)
+
+	w := pnl.Width()
+	h := pnl.Height()
+
+	fmt.Println(w, h)
 
 	btn := vcl.NewButton(mainForm)
-	btn.SetParent(sheet)
-	btn.SetCaption("左")
+	btn.SetParent(pnl)
+	btn.SetCaption("左(Left)")
 	btn.SetLeft(10)
 
 	// lcl下使用ClientWidth或者ClientHeight
 	// vcl下建议使用Width或者Height
 	// 原因估计是两套组件对于某些方面的处理不同
 	btn = vcl.NewButton(mainForm)
-	btn.SetParent(sheet)
-	btn.SetCaption("右")
+	btn.SetParent(pnl)
+	btn.SetCaption("右(Right)")
 	btn.SetLeft(w - btn.Width() - 10)
-	a := types.TAnchors(rtl.Include(0, types.AkTop, types.AkRight))
-	btn.SetAnchors(a)
+	btn.SetAnchors(types.NewSet(types.AkTop, types.AkRight))
+
+	// 中
+	btn = vcl.NewButton(mainForm)
+	btn.SetParent(pnl)
+	btn.SetCaption("中(Center)")
+	btn.SetLeft(w - btn.Width() - 10)
+	btn.AnchorHorizontalCenterTo(pnl)
+	btn.AnchorVerticalCenterTo(pnl)
 
 	btn = vcl.NewButton(mainForm)
-	btn.SetParent(sheet)
-	btn.SetCaption("左下")
+	btn.SetParent(pnl)
+	btn.SetCaption("左下(Left-Bottom)")
 	btn.SetLeft(10)
 	btn.SetTop(h - btn.Height() - 10)
-	a = types.TAnchors(rtl.Include(0, types.AkLeft, types.AkBottom))
-	btn.SetAnchors(a)
+	btn.SetAnchors(types.NewSet(types.AkLeft, types.AkBottom))
 
 	btn = vcl.NewButton(mainForm)
-	btn.SetParent(sheet)
-	btn.SetCaption("右下")
+	btn.SetParent(pnl)
+	btn.SetCaption("右下(Right-Bottom)")
 	btn.SetLeft(w - btn.Width() - 10)
 	btn.SetTop(h - btn.Height() - 10)
-	a = types.TAnchors(rtl.Include(0, types.AkRight, types.AkBottom))
-	btn.SetAnchors(a)
+	btn.SetAnchors(types.NewSet(types.AkRight, types.AkBottom))
 
 	//----------------------------------Margins----------------------------------
 
 	sheet = vcl.NewTabSheet(mainForm)
 	sheet.SetPageControl(pgc)
-	sheet.SetCaption("Margins")
+	sheet.SetCaption("BorderSpacing")
 
 	ppnl = vcl.NewPanel(mainForm)
 	ppnl.SetParent(sheet)
@@ -204,12 +209,46 @@ func main() {
 
 	pnl.SetAlign(types.AlClient)
 
-	pnl.SetAlignWithMargins(true)
-	m := pnl.Margins()
+	m := pnl.BorderSpacing()
 	m.SetLeft(20)
 	m.SetTop(30)
 	m.SetBottom(40)
 	m.SetRight(50)
 
+	//----------------------------------OnAlignPosition----------------------------------
+
+	sheet = vcl.NewTabSheet(mainForm)
+	sheet.SetPageControl(pgc)
+	sheet.SetCaption("Align = alCustom = OnAlignPosition")
+
+	pnl = vcl.NewPanel(mainForm)
+	pnl.SetParent(sheet)
+	pnl.SetAlign(types.AlClient)
+	// 子控件如果有设置为AlCustom的，则会触发这个事件
+	pnl.SetOnAlignPosition(onCustomAlignPosiion)
+
+	pnl2 := vcl.NewPanel(mainForm)
+	pnl2.SetParent(pnl)
+	pnl2.SetAlign(types.AlCustom)
+	pnl2.SetBounds(10, 10, 300, 300)
+	// 子控件如果有设置为AlCustom的，则会触发这个事件
+	pnl2.SetOnAlignPosition(onCustomAlignPosiion)
+
+	btn = vcl.NewButton(mainForm)
+	btn.SetParent(pnl2)
+	btn.SetAlign(types.AlCustom) // 自定义
+	btn.SetCaption("按钮。")
+
 	vcl.Application.Run()
+}
+
+// sender 调用此事件的控件
+// control 被调整的控件
+// newLeft, newTop, newWidth, newHeight 保存被调整的控件原始位置和大小
+// alignRect 保存对齐的矩形范围
+// alignInfo 对齐信息
+func onCustomAlignPosiion(sender *vcl.TWinControl, control *vcl.TControl, newLeft, newTop, newWidth, newHeight *int32, alignRect *types.TRect, alignInfo types.TAlignInfo) {
+	*newLeft = (alignRect.Width() - *newWidth) / 2
+	*newTop = (alignRect.Height() - *newHeight) / 2
+	fmt.Println(*newLeft, *newTop)
 }

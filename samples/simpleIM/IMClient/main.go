@@ -10,6 +10,7 @@ import (
 
 	"encoding/binary"
 
+	_ "github.com/ying32/govcl/pkgs/winappres"
 	"github.com/ying32/govcl/samples/simpleIM"
 	"github.com/ying32/govcl/vcl"
 	"github.com/ying32/govcl/vcl/types"
@@ -29,8 +30,6 @@ var (
 )
 
 func main() {
-	vcl.Application.SetFormScaled(true)
-	vcl.Application.SetIconResId(3)
 	vcl.Application.SetOnException(applicationException)
 	vcl.Application.Initialize()
 	vcl.Application.SetMainFormOnTaskBar(true)

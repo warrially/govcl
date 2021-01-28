@@ -1,14 +1,15 @@
 package main
 
 import (
+	_ "github.com/ying32/govcl/pkgs/winappres"
 	"github.com/ying32/govcl/vcl"
-
+	_ "github.com/ying32/govcl/vcl/locales/zh_CN"
 	"github.com/ying32/govcl/vcl/types"
 	"github.com/ying32/govcl/vcl/win"
 )
 
 func main() {
-	vcl.Application.SetIconResId(3)
+
 	vcl.Application.Initialize()
 	vcl.Application.SetMainFormOnTaskBar(true)
 

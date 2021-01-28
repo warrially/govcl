@@ -1,10 +1,21 @@
+//----------------------------------------
+//
+// Copyright © ying32. All Rights Reserved.
+//
+// Licensed under Apache License 2.0
+//
+//----------------------------------------
+
 // +build windows
 
 package win
 
 import (
+	"fmt"
 	"syscall"
 	"unsafe"
+
+	. "github.com/ying32/govcl/vcl/types"
 )
 
 var (
@@ -50,9 +61,32 @@ var (
 	_GetProcessHeap = kernel32dll.NewProc("GetProcessHeap")
 	_VirtualFree    = kernel32dll.NewProc("VirtualFree")
 	_lstrlen        = kernel32dll.NewProc("lstrlenA")
+	_lstrlenW       = kernel32dll.NewProc("lstrlenW")
 	_VirtualAlloc   = kernel32dll.NewProc("VirtualAlloc")
 	_VirtualProtect = kernel32dll.NewProc("VirtualProtect")
 	_IsBadReadPtr   = kernel32dll.NewProc("IsBadReadPtr")
+
+	_TerminateProcess    = kernel32dll.NewProc("TerminateProcess")
+	_TerminateThread     = kernel32dll.NewProc("TerminateThread")
+	_ExitThread          = kernel32dll.NewProc("ExitThread")
+	_ExitProcess         = kernel32dll.NewProc("ExitProcess")
+	_WaitForSingleObject = kernel32dll.NewProc("WaitForSingleObject")
+
+	_FindResource   = kernel32dll.NewProc("FindResourceW")
+	_LoadResource   = kernel32dll.NewProc("LoadResource")
+	_LockResource   = kernel32dll.NewProc("LockResource")
+	_SizeofResource = kernel32dll.NewProc("SizeofResource")
+	_FreeResource   = kernel32dll.NewProc("FreeResource")
+
+	_GlobalAddAtom    = kernel32dll.NewProc("GlobalAddAtomW")
+	_GlobalDeleteAtom = kernel32dll.NewProc("GlobalDeleteAtom")
+
+	_VirtualQueryEx     = kernel32dll.NewProc("VirtualQueryEx")
+	_ReadProcessMemory  = kernel32dll.NewProc("ReadProcessMemory")
+	_WriteProcessMemory = kernel32dll.NewProc("WriteProcessMemory")
+	_GetSystemInfo      = kernel32dll.NewProc("GetSystemInfo")
+
+	_OutputDebugString = kernel32dll.NewProc("OutputDebugStringW")
 )
 
 // GetLastError
@@ -241,6 +275,11 @@ func Lstrlen(lpString uintptr) int32 {
 	return int32(r)
 }
 
+func LstrlenW(lpString uintptr) int32 {
+	r, _, _ := _lstrlenW.Call(lpString)
+	return int32(r)
+}
+
 func VirtualAlloc(lpvAddress uintptr, dwSize uintptr, flAllocationType, flProtect uint32) uintptr {
 	r, _, _ := _VirtualAlloc.Call(lpvAddress, dwSize, uintptr(flAllocationType), uintptr(flProtect))
 	return r
@@ -254,4 +293,105 @@ func VirtualProtect(lpAddress uintptr, dwSize uintptr, flNewProtect uint32, lpfl
 func IsBadReadPtr(lp uintptr, ucb uintptr) bool {
 	r, _, _ := _IsBadReadPtr.Call(lp, ucb)
 	return r != 0
+}
+
+func TerminateProcess(hProcess uintptr, uExitCode uint32) bool {
+	r, _, _ := _TerminateProcess.Call(hProcess, uintptr(uExitCode))
+	return r != 0
+}
+
+func TerminateThread(hThread uintptr, dwExitCode uint32) bool {
+	r, _, _ := _TerminateThread.Call(hThread, uintptr(dwExitCode))
+	return r != 0
+}
+
+func ExitThread(dwExitCode uint32) {
+	_ExitThread.Call(uintptr(dwExitCode))
+}
+
+func ExitProcess(uExitCode uint32) {
+	_ExitProcess.Call(uintptr(uExitCode))
+}
+
+func WaitForSingleObject(hHandle uintptr, dwMilliseconds uint32) uint32 {
+	r, _, _ := _WaitForSingleObject.Call(hHandle, uintptr(dwMilliseconds))
+	return uint32(r)
+}
+
+func FindResource(hModule HMODULE, lpName string, lpType uintptr) HRSRC {
+	r, _, _ := _FindResource.Call(uintptr(hModule), CStr(lpName), lpType)
+	return HRSRC(r)
+}
+
+func LoadResource(hModule uintptr, hResInfo HRSRC) HGLOBAL {
+	r, _, _ := _LoadResource.Call(hModule, uintptr(hResInfo))
+	return HGLOBAL(r)
+}
+
+func LockResource(hResData HGLOBAL) uintptr {
+	r, _, _ := _LockResource.Call(uintptr(hResData))
+	return r
+}
+
+func SizeofResource(hModule uintptr, hResInfo HRSRC) uint32 {
+	r, _, _ := _SizeofResource.Call(hModule, uintptr(hResInfo))
+	return uint32(r)
+}
+
+func FreeResource(hResData HGLOBAL) bool {
+	r, _, _ := _FreeResource.Call(uintptr(hResData))
+	return r != 0
+}
+
+func GlobalAddAtom(lpString string) ATOM {
+	r, _, _ := _GlobalAddAtom.Call(CStr(lpString))
+	return ATOM(r)
+}
+
+func GlobalDeleteAtom(nAtom ATOM) ATOM {
+	r, _, _ := _GlobalDeleteAtom.Call(uintptr(nAtom))
+	return ATOM(r)
+}
+
+func VirtualQueryEx(hProcess uintptr, lpAddress uintptr, lpBuffer *TMemoryBasicInformation, dwLength SIZE_T) SIZE_T {
+	r, _, _ := _VirtualQueryEx.Call(hProcess, lpAddress, uintptr(unsafe.Pointer(lpBuffer)), dwLength)
+	return r
+}
+
+func ReadProcessMemoryBytes(hProcess uintptr, lpBaseAddress uintptr, nSize SIZE_T) ([]byte, bool) {
+	var lpNumberOfBytesRead SIZE_T
+	buffer := make([]byte, nSize)
+	r, _, _ := _ReadProcessMemory.Call(hProcess, lpBaseAddress, uintptr(unsafe.Pointer(&buffer[0])), nSize, uintptr(unsafe.Pointer(&lpNumberOfBytesRead)))
+	if r != 0 {
+		return buffer[:lpNumberOfBytesRead], true
+	}
+	return nil, false
+}
+
+func ReadProcessMemory(hProcess uintptr, lpBaseAddress uintptr, lpBuffer uintptr, nSize SIZE_T, lpNumberOfBytesRead *SIZE_T) bool {
+	r, _, _ := _ReadProcessMemory.Call(hProcess, lpBaseAddress, lpBuffer, nSize, uintptr(unsafe.Pointer(lpNumberOfBytesRead)))
+	return r != 0
+}
+
+func WriteProcessMemoryBytes(hProcess uintptr, lpBaseAddress uintptr, lpBuffer []byte, nSize SIZE_T) (SIZE_T, bool) {
+	var lpNumberOfBytesWritten SIZE_T
+	r, _, _ := _WriteProcessMemory.Call(hProcess, lpBaseAddress, uintptr(unsafe.Pointer(&lpBuffer[0])), nSize, uintptr(unsafe.Pointer(&lpNumberOfBytesWritten)))
+	if r != 0 {
+		return lpNumberOfBytesWritten, true
+	}
+	return 0, false
+}
+
+func WriteProcessMemory(hProcess uintptr, lpBaseAddress uintptr, lpBuffer uintptr, nSize SIZE_T, lpNumberOfBytesWritten *SIZE_T) bool {
+	r, _, _ := _WriteProcessMemory.Call(hProcess, lpBaseAddress, lpBuffer, nSize, uintptr(unsafe.Pointer(lpNumberOfBytesWritten)))
+	return r != 0
+}
+
+func GetSystemInfo(lpSystemInfo *TSystemInfo) bool {
+	r, _, _ := _GetSystemInfo.Call(uintptr(unsafe.Pointer(lpSystemInfo)))
+	return r != 0
+}
+
+func OutputDebugString(v ...interface{}) {
+	_OutputDebugString.Call(uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(fmt.Sprintln(v...)))))
 }

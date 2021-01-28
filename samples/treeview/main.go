@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
+	"runtime"
 
+	_ "github.com/ying32/govcl/pkgs/winappres"
 	"github.com/ying32/govcl/vcl"
 	"github.com/ying32/govcl/vcl/rtl"
 	"github.com/ying32/govcl/vcl/types"
@@ -21,12 +23,17 @@ func main() {
 	mainForm.SetWidth(600)
 	mainForm.SetHeight(500)
 
-	icon := vcl.NewIcon()
-	defer icon.Free()
-	icon.LoadFromResourceID(rtl.MainInstance(), 3)
-
 	imglist := vcl.NewImageList(mainForm)
+
+	icon := vcl.NewIcon()
+	if runtime.GOOS == "windows" {
+		icon.LoadFromResourceName(rtl.MainInstance(), "MAINICON")
+	} else {
+		icon.LoadFromFile("./brown.ico")
+	}
 	imglist.AddIcon(icon)
+	icon.Free()
+
 	ico2 := vcl.NewIcon()
 	ico2.LoadFromFile("brown.ico")
 	imglist.AddIcon(ico2)
@@ -56,15 +63,23 @@ func main() {
 
 	tv.SetOnClick(func(vcl.IObject) {
 		node := tv.Selected()
-		if node != nil && node.IsValid() {
+		if node != nil /*&& node.IsValid()*/ {
 			fmt.Println("Text:", node.Text(), ", Level:", node.Level(), ", Index:", node.Index(), ", hasChild:", node.HasChildren())
 		}
 	})
-
+	// 双击删除
+	tv.SetOnDblClick(func(sender vcl.IObject) {
+		sel := tv.Selected()
+		if sel != nil /*&& sel.IsValid()*/ {
+			sel.Delete()
+		}
+		// 或者
+		//tv.Items().Delete(sel)
+	})
 	tv.SetOnMouseDown(func(sender vcl.IObject, button types.TMouseButton, shift types.TShiftState, x, y int32) {
 		if button == types.MbRight {
 			node := tv.GetNodeAt(x, y)
-			if node != nil && node.IsValid() {
+			if node != nil /*&& node.IsValid()*/ {
 				// 自由决择是否选中
 				node.SetSelected(true)
 				// 根据Level来判断，这里只是做演示

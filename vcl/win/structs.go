@@ -1,6 +1,16 @@
+//----------------------------------------
+//
+// Copyright © ying32. All Rights Reserved.
+//
+// Licensed under Apache License 2.0
+//
+//----------------------------------------
+
 // +build windows
 
 package win
+
+import . "github.com/ying32/govcl/vcl/types"
 
 type TRGBQuad struct {
 	RgbBlue     uint8
@@ -40,8 +50,9 @@ type TSystemInfo struct {
 	//0: (
 	//dwOemId: DWORD);
 	//1: (
-	ProcessorArchitecture     uint16
-	Reserved                  uint16
+	ProcessorArchitecture uint16
+	Reserved              uint16
+
 	PageSize                  uint32
 	MinimumApplicationAddress uintptr
 	MaximumApplicationAddress uintptr
@@ -57,4 +68,48 @@ type TSecurityAttributes struct {
 	nLength              uint32
 	lpSecurityDescriptor uintptr
 	bInheritHandle       bool // BOOL
+}
+
+type TSHItemID struct {
+	Cb   uint16  // Size of the ID (including cb itself)
+	AbID [1]byte // The item ID (variable length)
+}
+
+type TItemIDList struct {
+	Mkid TSHItemID
+}
+
+// ShellExecuteEx
+type TShellExecuteInfo struct {
+	CbSize       uint32
+	FMask        uint32
+	Wnd          HWND
+	LpVerb       LPCWSTR
+	LpFile       LPCWSTR
+	LpParameters LPCWSTR
+	LpDirectory  LPCWSTR
+	NShow        int32
+	HInstApp     HINST
+	// Optional fields
+	LpIDList  uintptr
+	LpClass   LPCWSTR
+	HkeyClass HKEY
+	DwHotKey  uint32
+
+	//	0: (
+	// HICON
+	//	1: (
+	HIcon_hMonitor uintptr
+
+	HProcess uintptr
+}
+
+type TMemoryBasicInformation struct {
+	BaseAddress       uintptr
+	AllocationBase    uintptr
+	AllocationProtect uint32
+	RegionSize        SIZE_T
+	State             uint32
+	Protect           uint32
+	Type_9            uint32
 }

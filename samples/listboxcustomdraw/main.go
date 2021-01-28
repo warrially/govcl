@@ -1,15 +1,14 @@
 package main
 
 import (
+	_ "github.com/ying32/govcl/pkgs/winappres"
 	"github.com/ying32/govcl/vcl"
-	"github.com/ying32/govcl/vcl/rtl"
 	"github.com/ying32/govcl/vcl/types"
 	"github.com/ying32/govcl/vcl/types/colors"
 )
 
 func main() {
 
-	vcl.Application.SetIconResId(3)
 	vcl.Application.Initialize()
 	vcl.Application.SetMainFormOnTaskBar(true)
 
@@ -46,11 +45,11 @@ func main() {
 		canvas.Pen().SetColor(colors.ClSkyblue)
 		canvas.Rectangle(aRect.Left+1, aRect.Top+1, aRect.Right-1, aRect.Bottom-1)
 		canvas.Rectangle(aRect.Left, aRect.Top, aRect.Right, aRect.Bottom)
-		if rtl.InSets(uint32(state), types.OdSelected) {
+		if state.In(types.OdSelected) {
 			canvas.Brush().SetColor(0x00FFB2B5)
 			canvas.Rectangle(aRect.Left+1, aRect.Top+1, aRect.Right-1, aRect.Bottom-1)
 			canvas.Font().SetColor(colors.ClBlue)
-			if rtl.InSets(uint32(state), types.OdFocused) {
+			if state.In(types.OdFocused) {
 				canvas.DrawFocusRect(aRect)
 			}
 		}
